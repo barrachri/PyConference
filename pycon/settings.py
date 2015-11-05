@@ -32,6 +32,18 @@ ALLOWED_HOSTS = ['']
 # Application definition
 
 INSTALLED_APPS = (
+# The Django sites framework is required
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    #'allauth.socialaccount.providers.facebook',
+    #'allauth.socialaccount.providers.github',
+
+    'grappelli',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -65,37 +77,37 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'pycon.urls'
 
-# TEMPLATES = [
-#     {
-#         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-#         'DIRS': [],
-#         'APP_DIRS': False,
-#         'OPTIONS': {
-#             'context_processors': [
-#                 'django.template.context_processors.debug',
-#                 'django.template.context_processors.request',
-#                 'django.contrib.auth.context_processors.auth',
-#                 'django.contrib.messages.context_processors.messages',
-#             ],
-#         },
-#     },
-# ]
+TEMPLATES = [
+     {
+         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+         'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+         ],
+         'APP_DIRS': True,
+         'OPTIONS': {
+             'context_processors': [
+                 'django.core.context_processors.debug',
+                 'django.core.context_processors.request',
+                 'django.contrib.auth.context_processors.auth',
+                 'django.core.context_processors.i18n',
+                 'django.core.context_processors.media',
+                 'django.core.context_processors.static',
+                 'django.core.context_processors.csrf',
+                 'django.contrib.messages.context_processors.messages',
+             ],
+         },
+     },
+ ]
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.debug',
-    'django.core.context_processors.request',
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.csrf',
-    'django.contrib.messages.context_processors.messages',
-)
-
+SITE_ID = 1
 
 WSGI_APPLICATION = 'pycon.wsgi.application'
 
@@ -110,6 +122,20 @@ DATABASES = {
     }
 }
 
+# allauth configuration
+# http://django-allauth.readthedocs.org/
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_SIGNUP_FORM_CLASS = 'pycon.core.forms.SignupForm'
+
+# Email
+# https://docs.djangoproject.com/en/1.8/topics/email/
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

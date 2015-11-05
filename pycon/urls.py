@@ -7,6 +7,8 @@ from pycon.home.views import HomeView
 from pycon.volunteers.views import VolunteersView
 
 urlpatterns = [
+    url(r'^grappelli/', include('grappelli.urls')), # grappelli URLS
+
     url(r'^admin/', include(admin.site.urls)),
     url(r'^slides/', include('pycon.slides.urls')),
 ]
@@ -20,6 +22,7 @@ urlpatterns += i18n_patterns(
     url(r'^sponsors/', include('pycon.sponsors.urls')),
     url(r'^venue/', include('pycon.venue.urls')),
     url(r'^conduct/', include('pycon.conduct.urls')),
+    url(r'^accounts/', include('allauth.urls')),
 )
 
 if getattr(settings, 'DEBUG'):
