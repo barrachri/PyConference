@@ -30,37 +30,59 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import datetime
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
-class Speaker(models.Model):
-    name = models.CharField(max_length=100)
-    bio = models.TextField(blank=True)
-    photo = models.ImageField(upload_to="speaker_photos", blank=True)
-    
+class Conference(models.Model):
+    '''
+    Speaker is linked with a registered user, so every speaker must be a user
+    '''
+    name = models.CharField(max_length=50)
+    duration = models.TextField(blank=True)
+    url = models.URLField(blank=True)
+    twitter_link = models.URLField(blank=True)
+    photo = models.ImageField(upload_to="speaker_photos", blank=True) # maybe add something like gravatar api or take the photo from google/social
+
     class Meta:
         ordering = ['name']
-    
+
     def __str__(self):
         return self.name
 
+class Speaker(models.Model):
+    '''
+    Speaker is linked with a registered user, so every speaker must be a user
+    '''
+    user = models.OneToOneField(User)
+    bio = models.TextField(blank=True)
+    url = models.URLField(blank=True)
+    twitter_link = models.URLField(blank=True)
+    photo = models.ImageField(upload_to="speaker_photos", blank=True) # maybe add something like gravatar api or take the photo from google/social
+
+    class Meta:
+        ordering = ['user']
+
+    def __str__(self):
+        return self.user.username
+
 class Day(models.Model):
     date = models.DateField(unique=True)
-    
+
     def __str__(self):
         return "%s" % self.date
-    
+
     class Meta:
         ordering = ["date"]
 
 class Room(models.Model):
     name = models.CharField(max_length=100)
-    
+
     order = models.PositiveIntegerField()
-    
+
     def __str__(self):
         return self.name
-    
+
     class Meta:
         ordering = ["order"]
 
@@ -76,7 +98,6 @@ class Slot(models.Model):
     start = models.TimeField()
     end = models.TimeField()
     content_override = models.TextField(blank=True)
-    feedback_url = models.URLField(blank=True)
 
     def assign(self, content):
         """
@@ -85,7 +106,7 @@ class Slot(models.Model):
         """
         self.unassign()
         content.slots()
-    
+
     def unassign(self):
         """
         Unassign the associated content with this slot.
@@ -94,7 +115,7 @@ class Slot(models.Model):
         if content and content.slot_id:
             content.slot = None
             content.save()
-    
+
     @property
     def content(self):
         """
@@ -105,7 +126,7 @@ class Slot(models.Model):
             return self.content_ptr
         except ObjectDoesNotExist:
             return None
-    
+
     @property
     def start_datetime(self):
         return datetime.datetime(
@@ -114,7 +135,7 @@ class Slot(models.Model):
             self.day.date.day,
             self.start.hour,
             self.start.minute)
-    
+
     @property
     def end_datetime(self):
         return datetime.datetime(
@@ -123,12 +144,12 @@ class Slot(models.Model):
             self.day.date.day,
             self.end.hour,
             self.end.minute)
-    
+
     @property
     def length_in_minutes(self):
         return int(
             (self.end_datetime - self.start_datetime).total_seconds() / 60)
-    
+
     @property
     def rooms(self):
         return Room.objects.filter(pk__in=self.slotroom_set.values("room"))
@@ -152,17 +173,17 @@ class Slot(models.Model):
     def __str__(self):
         roomlist = ' '.join(map(lambda r: r.__str__(), self.rooms))
         return "%s %s (%s - %s) %s" % (self.day, self.kind, self.start, self.end, roomlist)
-    
+
     class Meta:
         ordering = ["day", "start", "end"]
 
 class SlotRoom(models.Model):
     slot = models.ForeignKey(Slot)
     room = models.ForeignKey(Room)
-    
+
     def __str__(self):
         return "%s %s" % (self.room, self.slot)
-    
+
     class Meta:
         unique_together = [("slot", "room")]
         ordering = ["slot", "room__order"]
@@ -180,7 +201,7 @@ class Presentation(models.Model):
         yield self.speaker
         for speaker in self.additional_speakers.all():
             yield speaker
-    
+
     def __str__(self):
         return "%s (%s)" % (self.title, self.speaker)
 

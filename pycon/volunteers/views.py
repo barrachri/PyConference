@@ -9,4 +9,4 @@ class VolunteersView(PyconTemplateView):
 
     def get(self, request):
         return self.render_to_response({
-            'volunteer_list': Volunteer.objects.all()})
+            'volunteer_list': Volunteer.objects.all().order_by('name')})

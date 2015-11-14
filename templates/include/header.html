@@ -32,7 +32,13 @@
             <a href="{% url 'home' %}" class="header-logo">PyCon Canada</a>
             <a href="{% url 'schedule' %}" class="header-link">{% trans 'Schedule' %}</a>
             <a href="{% url 'venue' %}" class="header-link">{% trans 'Venue' %}</a>
-
+            {% if user.is_authenticated %}
+            <a href="{% url 'account_email' %}" class="header-link">{% trans 'Dashboard' %}</a>
+            <a href="{% url 'account_logout' %}" class="header-link">{% trans 'Sign out' %}</a>
+            {% else %}
+            <a href="{% url 'account_login' %}" class="header-link">{% trans 'Log in' %}</a>
+            <a href="{% url 'account_signup' %}" class="header-link">{% trans 'Sign up' %}</a>
+            {% endif %}
             <div class="mobile burger-container">
                 <a href="#menu" class="mobile burger">Menu</a>
             </div>
