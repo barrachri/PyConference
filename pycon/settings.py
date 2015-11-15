@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     'pycon.slides',
     'pycon.sponsors',
     'pycon.conduct',
+    #'pycon.volunteers',
 
     'django_markup',
     'django_medusa',
@@ -191,5 +192,14 @@ WEBKIT2PNG_PATH = '/usr/local/bin/webkit2png'
 
 try:
     from pycon.localsettings import *
+except ImportError:
+    pass
+
+#-------------------------------------------------------------------------------
+# settings_conference.py
+#-------------------------------------------------------------------------------
+
+try:
+    from pycon.settings_conference import *
 except ImportError:
     pass
