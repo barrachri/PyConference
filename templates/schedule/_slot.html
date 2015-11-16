@@ -2,9 +2,7 @@
     {% if not slot.content %}
     {{ slot.content_override|safe }}
     {% if user.is_authenticated %}
-    <small class="admin_link">
-        (<a href="{% url 'admin:schedule_presentation_add' %}?slot={{ slot.pk }}">Add Presentation</a>)
-    </small>
+
     {% endif %}
     {% else %}
         <span class="title">
@@ -15,7 +13,7 @@
         </span>
         {% if user.is_authenticated %}
         <small class="admin_link">
-            (<a href="{% url 'admin:schedule_presentation_change' slot.content.pk %}">Edit Presentation</a>)
+            (<a href="{% url 'admin:schedule_proposal_change' slot.content.pk %}">Edit Presentation</a>)
         </small>
         {% endif %}
     {% endif %}

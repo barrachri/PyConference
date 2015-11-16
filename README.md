@@ -121,3 +121,13 @@ Building the Static Cache on the Server
 	$ cd /data/web/2015.pycon.ca/pyconca/
 	$ . ../activate
 	$ python manage.py staticsitegen
+
+How to create the schedule
+---------------------------------------
+
+	$ Add the date for the conference
+	$ Add the room
+  $ Add the slot
+	$ Add the talks
+  $ Set the talks inside the slot
+  $ Set the slot room

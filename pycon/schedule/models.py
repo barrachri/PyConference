@@ -34,15 +34,18 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 
+# You import settings to access the settings_conference.py
+from django.conf import settings
+
 class Conference(models.Model):
     '''
     Speaker is linked with a registered user, so every speaker must be a user
     '''
     name = models.CharField(max_length=50)
+    year = models.BooleanField(default=False)
     duration = models.TextField(blank=True)
     url = models.URLField(blank=True)
     twitter_link = models.URLField(blank=True)
-    photo = models.ImageField(upload_to="speaker_photos", blank=True) # maybe add something like gravatar api or take the photo from google/social
 
     class Meta:
         ordering = ['name']
@@ -63,8 +66,50 @@ class Speaker(models.Model):
     class Meta:
         ordering = ['user']
 
+    def first_name(self):
+        return self.user.first_name
+
+    def last_name(self):
+        return self.user.last_name
+
+    def username(self):
+        if self.user.email == "":
+            return self.user.username
+        else:
+            return self.user.email
+
     def __str__(self):
-        return self.user.username
+        return self.username()
+
+class Proposal(models.Model):
+    '''
+    The model about the talk proposal
+    '''
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    proposal_type = models.CharField(max_length=50, choices=settings.PROPOSAL_TYPE)
+    speaker = models.ForeignKey(Speaker, related_name="presentations")
+    additional_speakers = models.ManyToManyField(Speaker, related_name="copresentations", blank=True)
+    language = models.CharField(max_length=3, choices=settings.PROPOSAL_LANGUAGES)
+    level = models.CharField(max_length=50, choices=settings.PROPOSAL_LEVEL)
+    status = models.CharField(max_length=50, choices=settings.PROPOSAL_STATUS)
+    duration = models.DurationField(choices=settings.PROPOSAL_DURATION)
+    cancelled = models.BooleanField(default=False)
+
+    def speakers(self):
+        yield self.speaker
+        for speaker in self.additional_speakers.all():
+            yield speaker
+
+    def __str__(self):
+        return "%s (%s)" % (self.title, self.speaker)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('schedule_presentation_detail', (), {'pk': self.pk})
+
+    class Meta:
+        ordering = ["slot"]
 
 class Day(models.Model):
     date = models.DateField(unique=True)
@@ -76,8 +121,10 @@ class Day(models.Model):
         ordering = ["date"]
 
 class Room(models.Model):
+    '''
+    Model about the rooms
+    '''
     name = models.CharField(max_length=100)
-
     order = models.PositiveIntegerField()
 
     def __str__(self):
@@ -93,11 +140,17 @@ class SlotKind(models.Model):
         return self.label
 
 class Slot(models.Model):
+    '''
+    The slot rapresent a "space" of the prposal inside the Schedule
+    You can leave a slot without a proposal adding some custome text using
+    the content_override
+    '''
     day = models.ForeignKey(Day)
     kind = models.ForeignKey(SlotKind)
     start = models.TimeField()
     end = models.TimeField()
     content_override = models.TextField(blank=True)
+    proposal = models.OneToOneField(Proposal, null=True, blank=True, related_name="slot")
 
     def assign(self, content):
         """
@@ -123,7 +176,7 @@ class Slot(models.Model):
         @@@ hard-coded for presentation for now
         """
         try:
-            return self.content_ptr
+            return self.proposal
         except ObjectDoesNotExist:
             return None
 
@@ -179,38 +232,15 @@ class Slot(models.Model):
 
 class SlotRoom(models.Model):
     slot = models.ForeignKey(Slot)
-    room = models.ForeignKey(Room)
+    room = models.ManyToManyField(Room)
 
     def __str__(self):
-        return "%s %s" % (self.room, self.slot)
+        return "%s" % (self.slot)
 
     class Meta:
-        unique_together = [("slot", "room")]
+        #unique_together = [("slot", "room")] #remove this field
         ordering = ["slot", "room__order"]
 
-class Presentation(models.Model):
-    slot = models.OneToOneField(Slot, null=True, blank=True, related_name="content_ptr")
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    speaker = models.ForeignKey(Speaker, related_name="presentations")
-    additional_speakers = models.ManyToManyField(Speaker, related_name="copresentations", blank=True)
-    proposal_id = models.PositiveIntegerField('Proposal ID', unique=True)
-    cancelled = models.BooleanField(default=False)
-
-    def speakers(self):
-        yield self.speaker
-        for speaker in self.additional_speakers.all():
-            yield speaker
-
-    def __str__(self):
-        return "%s (%s)" % (self.title, self.speaker)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('schedule_presentation_detail', (), {'pk': self.pk})
-
-    class Meta:
-        ordering = ["slot"]
 
 class Session(models.Model):
     day = models.ForeignKey(Day, related_name="sessions")
