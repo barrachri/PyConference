@@ -29,6 +29,14 @@ class SpeakerAdmin(admin.ModelAdmin):
     search_fields = ('user__email', "user__first_name", "user__last_name")
     #inlines = [SlotRoomInline]
 
+class ConferenceAdmin(admin.ModelAdmin):
+    model = Conference
+    list_display = ("pk", "name", "cfp_start", "cfp_end",
+        "voting_start", "voting_end", "conference_start",
+        "conference_end")
+    search_fields = ["name"]
+    #inlines = [SlotRoomInline]
+
 admin.site.register(Day)
 admin.site.register(
     SlotKind,
@@ -43,3 +51,4 @@ admin.site.register(Slot, SlotAdmin)
 admin.site.register(Session)
 admin.site.register(Proposal, PresentationAdmin)
 admin.site.register(Speaker, SpeakerAdmin)
+admin.site.register(Conference, ConferenceAdmin)

@@ -32,19 +32,20 @@ import datetime
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 # You import settings to access the settings_conference.py
 from django.conf import settings
 
 class Conference(models.Model):
-    name = models.CharField(max_length=100)
-    cfp_start = models.DateField(null=True, blank=True)
-    cfp_end = models.DateField(null=True, blank=True)
-    conference_start = models.DateField(null=True, blank=True)
-    conference_end = models.DateField(null=True, blank=True)
+    name = models.CharField(max_length=50, help_text="The name of the conference")
+    cfp_start = models.DateField(null=True, verbose_name="Call for proposal start", blank=True)
+    cfp_end = models.DateField(null=True, blank=True, verbose_name="Call for proposal end")
     voting_start = models.DateField(null=True, blank=True)
     voting_end = models.DateField(null=True, blank=True)
+    conference_start = models.DateField(null=True, blank=True)
+    conference_end = models.DateField(null=True, blank=True)
+
 
     def days(self):
         output = []
@@ -59,13 +60,13 @@ class Conference(models.Model):
     def clean(self):
         if self.conference_start and self.conference_end:
             if self.conference_start > self.conference_end:
-                raise exceptions.ValidationError('range di date per la conferenza non valido')
+                raise ValidationError('Conference start must be before of conference end')
         if self.cfp_start and self.cfp_end:
             if self.cfp_start > self.cfp_end:
-                raise exceptions.ValidationError('range di date per il cfp non valido')
+                raise ValidationError('Call for proposal start must be before of call for proposal end')
         if self.voting_start and self.voting_end:
             if self.voting_start > self.voting_end:
-                raise exceptions.ValidationError('range di date per la votazione non valido')
+                raise ValidationError('Voting start must be before of voting end')
 
     def cfp(self):
         today = datetime.date.today()
