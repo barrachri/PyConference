@@ -46,8 +46,10 @@ class Conference(models.Model):
     conference_start = models.DateField(null=True, blank=True)
     conference_end = models.DateField(null=True, blank=True)
 
-
     def days(self):
+        '''
+        This funcntion return the list of the days of the conference
+        '''
         output = []
         if self.conference_start and self.conference_end:
             d = self.conference_start
@@ -58,6 +60,9 @@ class Conference(models.Model):
         return output
 
     def clean(self):
+        '''
+        This function checks if the start dates are before the end dates
+        '''
         if self.conference_start and self.conference_end:
             if self.conference_start > self.conference_end:
                 raise ValidationError('Conference start must be before of conference end')
@@ -158,7 +163,13 @@ class Proposal(models.Model):
         ordering = ["slot"]
 
 class Day(models.Model):
-    date = models.DateField(unique=True)
+    conference = models.ForeignKey(Conference)
+    today = datetime.date.today()
+    t = (
+        (today, (today.strftime("%A, %d %B %Y"))),
+        ('accepted', ('Accepted')),
+    )
+    date = models.DateField(unique=True, choices=t)
 
     def __str__(self):
         return "%s" % self.date
