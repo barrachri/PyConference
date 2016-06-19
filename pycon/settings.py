@@ -54,11 +54,12 @@ INSTALLED_APPS = (
     'pycon.core',
     'pycon.home',
     'pycon.about',
+    'pycon.tickets',
     'pycon.schedule',
     'pycon.slides',
     'pycon.sponsors',
     'pycon.conduct',
-    #'pycon.volunteers',
+    'pycon.volunteers',
 
     'django_markup',
     'django_medusa',

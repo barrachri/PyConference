@@ -15,9 +15,9 @@ urlpatterns = [
 
 urlpatterns += i18n_patterns(
     url(r"^$", HomeView.as_view(), name='home'),
-    url(r'^volunteers/$', VolunteersView.as_view(), name='volunteers'),
-
+    url(r'^volunteers/', include('pycon.volunteers.urls')),
     url(r'^about/', include('pycon.about.urls')),
+    url(r'^tickets/', include('pycon.tickets.urls')),
     url(r'^schedule/', include('pycon.schedule.urls')),
     url(r'^sponsors/', include('pycon.sponsors.urls')),
     url(r'^venue/', include('pycon.venue.urls')),
@@ -26,8 +26,8 @@ urlpatterns += i18n_patterns(
 )
 
 if getattr(settings, 'DEBUG'):
-    urlpatterns += patterns('',
+    urlpatterns += [
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
             'document_root': settings.MEDIA_ROOT,
         }),
-   )
+   ]

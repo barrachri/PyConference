@@ -1,9 +1,9 @@
 from django.contrib import admin
-from pycon.about.models import Volunteer
+from pycon.volunteers.models import Volunteer
 
 
 class VolunteerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'url')
+    list_display = ('user', 'role')
 
 
 admin.site.register(Volunteer, VolunteerAdmin)

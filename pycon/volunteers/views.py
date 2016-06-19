@@ -1,4 +1,4 @@
-from pycon.about.models import Volunteer
+from pycon.volunteers.models import Volunteer
 from pycon.core.views import PyconTemplateView
 
 from pycon.volunteers.models import Volunteer

@@ -51,6 +51,7 @@ PROPOSAL_TYPE = (
 PROPOSAL_STATUS = (
     ('proposed', ('Proposed')),
     ('accepted', ('Accepted')),
+    ('cancelled', ('Cancelled')),
 )
 #-------------------------------------------------------------------------------
 # Proposal duration
@@ -95,3 +96,40 @@ VIDEO_TYPE = (
     ('viddler_oembed', 'oEmbed (Youtube, Vimeo, ...)'),
     ('download', 'Download'),
 )
+
+"""Settings, types etc about tickets"""
+
+FARE_TICKET_TYPES = (
+    ('conference', 'Conference ticket'),
+    ('partner', 'Partner Program'),
+    ('event', 'Event'),
+    ('other', 'Other'),
+)
+
+FARE_PAYMENT_TYPE = (
+    ('p', 'Payment'),
+    ('v', 'Voucher'),
+    ('d', 'Deposit'),
+)
+
+FARE_TYPES = (
+    ('c', 'Company'),
+    ('s', 'Student'),
+    ('p', 'Personal'),
+)
+
+ORDER_PAYMENT = (
+    ('cc', 'Credit Card'),
+    ('paypal', 'PayPal'),
+    #('bank', 'Bank'),
+)
+
+# MERCHANT API
+
+MERCHANT_TEST_MODE = True # Toggle for live
+MERCHANT_SETTINGS = {
+    "stripe": {
+        "API_KEY": "???",
+        "PUBLISHABLE_KEY": "???", # Used for stripe integration
+    }
+}

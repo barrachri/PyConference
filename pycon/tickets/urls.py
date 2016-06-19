@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from pycon.schedule.views import ScheduleView, PresentationView
+from pycon.tickets.views import ScheduleView, PresentationView, InvoiceView
 
 urlpatterns = [
     url(
@@ -10,6 +10,11 @@ urlpatterns = [
     url(
         regex = r"^(?P<pk>[0-9]+)/$",
         view = PresentationView.as_view(),
+        name = 'schedule_presentation_detail'
+    ),
+    url(
+        regex = r"^invoices/(?P<pk>[0-9]+)/$",
+        view = InvoiceView.as_view(),
         name = 'schedule_presentation_detail'
     ),
 ]

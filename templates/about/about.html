@@ -88,7 +88,7 @@
                             <a class="volunteer-url" href="{{ volunteer.url }}" target="_blank">{{ volunteer.name }}</a>
                         </li>
                     {% else %}
-                        <li>{{ volunteer.name }}</li>
+                        <li>{{ volunteer.user.first_name }} {{ volunteer.user.last_name }} - {{ volunteer.role }}</li>
                     {% endif %}
                 {% endfor %}
             </ul>
