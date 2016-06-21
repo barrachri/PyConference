@@ -1,6 +1,6 @@
-Pycon Canada 2015
+PyConference
 =================
-
+[based on](https://github.com/pyconca/pycon-2015)
 
 Development Environment Setup
 -----------------------------
@@ -33,23 +33,7 @@ Create the database:
 
     (pycon) $ python manage.py migrate
 
-Create `pycon/localsettings.py` with the following
-
-
-    import os
-
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-    DEBUG = True
-    TEMPLATE_DEBUG = True
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'dev_db.sqlite3'),
-        }
-    }
+check `pycon/settings/localsettings.py`
 
 Run the project:
 
@@ -104,16 +88,6 @@ Go to the `deploy` directory and run:
 
     $ ansible-playbook -i inventory/prod site.yml
 
-Importing Feedback URLs
------------------------
-
-Sign up at (Bitly)[https://bitly.com/a/sign_in?rd=%2Fa%2Foauth_apps] and get auth token.
-
-Add `BITLY_KEY = 'YOUR_TOKEN_HERE'` to your `localsettings.py` file.
-
-Import the URLs:
-
-    $ python manage.py importfeedbackurls
 
 Building the Static Cache on the Server
 ---------------------------------------
