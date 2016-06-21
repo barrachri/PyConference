@@ -1,0 +1,53 @@
+####################
+## DATA CONTAINER ##
+####################
+nginx_data:
+    image: busybox
+    command: echo datacontainer
+    volumes:
+        - /var/log/nginx
+        - /etc/nginx/ssl
+        - /etc/nginx/sites-enabled
+        - /www
+
+###########################
+## EP2016 DATA CONTAINER ##
+##########################
+ep2016_data:
+    image: busybox
+    command: echo datacontainer
+    volumes:
+        - /usr/src/ep2016/data/site
+        - /usr/src/ep2016/data/media_public
+        - /usr/src/ep2016/data/media_private
+
+####################
+## NGINX CONTAINER ##
+####################
+nginx:
+    restart: always
+    image: tutum/nginx
+    ports:
+        - "80:80"
+        - "443:443"
+    volumes_from:
+        - nginx_data
+        - ep2016
+    links:
+        - ep2016
+
+####################
+## EP2016 CONTAINER ##
+####################
+ep2016:
+    restart: always
+    build: dockerfile/ep2016/
+    expose:
+        - "80"
+    volumes:
+        - /usr/src/ep2016
+    volumes_from:
+        - ep2016_data
+    env_file:
+        - env_files/ep2016_env
+    command: gunicorn pycon.wsgi:application --bind 0.0.0.0:80 --workers 4
